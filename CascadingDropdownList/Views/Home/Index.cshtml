@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h4>www.aprendadotnet.com.br - ASP.NET MVC - jQuery - Cascading Dropdown List</h4>
+
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+
+        <div>
+            <span>
+                <label for="artista">Artistas:</label>
+                <select id="artista" name="artista">
+                    <option value=""></option>
+                </select>
+                <label for="albun">Albuns:</label>
+                <select id="albun" name="albun">
+                    <option value=""></option>
+                </select>
+            </span>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Populate categories when the page is loaded.
+            //Populando artistas quando a página é carregada
+            $.getJSON('/Home/ObterArtistas', function (data) {
+                // Ajax, popula o drop com Json
+                $('#artista option').remove();
+                for (i = 0; i < data.length; i++) {
+                    $('#artista').append('<option value="' +
+                    data[i].ArtistId + '">' + data[i].Name + '</option');
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                // Erro
+                alert('Erro obtendo artistas!');
+            });
+
+            // Primeiro drop, quando selecioamos um artista
+            $('#artista').change(function () {
+                var id = $(this).find(":selected").val();
+
+                // Populamos os albuns com getJSON.
+                $.getJSON('/Home/ObterAlbuns', { id: id }, function (data) {
+                    $('#albun option').remove();
+                    for (i = 0; i < data.length; i++) {
+                        $('#albun').append('<option value="' +
+                        data[i].AlbumId + '">' + data[i].Title + '</option');
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    // Ajax fail callback function.
+                    alert('Erro obtendo artistas.!');
+                });
+            });
+        });
+    </script>
+}
